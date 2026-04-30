@@ -55,7 +55,7 @@ export default function App() {
     try {
       const output = await generateAIPrompt(promptType, idea, selectedStyle, ratio);
       const newPrompt: GeneratedPrompt = {
-        id: crypto.randomUUID(),
+        id: Math.random().toString(36).substring(2, 15) + Date.now().toString(36),
         type: promptType,
         input: idea,
         style: selectedStyle,

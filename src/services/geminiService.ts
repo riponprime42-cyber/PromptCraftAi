@@ -1,7 +1,18 @@
 import { GoogleGenAI } from "@google/genai";
 import { PromptType, AspectRatio } from "./types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+let genAI: GoogleGenAI | null = null;
+
+function getAIClient() {
+  if (!genAI) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY is not defined in environment variables.");
+    }
+    genAI = new GoogleGenAI({ apiKey });
+  }
+  return genAI;
+}
 
 const SYSTEM_PROMPT = `You are PromptCraft AI, a world-class AI prompt engineer for image and video generation models like Midjourney, DALL-E 3, Stable Diffusion, Sora, and Kling.
 
@@ -22,6 +33,7 @@ export async function generateAIPrompt(
   ratio: AspectRatio
 ): Promise<string> {
   try {
+    const ai = getAIClient();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Generate a ${type} prompt based on this:
